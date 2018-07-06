@@ -40,12 +40,12 @@ void VideoItem::setSource(QQuickItem *source)
     emit sourceChanged();
 }
 
-void VideoItem::updateFrame(cv::UMat frame)
+void VideoItem::updateFrame(frameData data)
 {
     //Change UMat colorchannel from BGR to RGB.
-    cv::cvtColor(frame, frame, cv::COLOR_BGR2RGB);
+    cv::cvtColor(data.frame, data.frame, cv::COLOR_BGR2RGB);
     //Port image data from UMat to QImage.
-    QImage image(frame.getMat(1).data, frame.cols, frame.rows, frame.step, QImage::Format_RGB888);
+    QImage image(data.frame.getMat(1).data, data.frame.cols, data.frame.rows, data.frame.step, QImage::Format_RGB888);
 
     if (!image.isNull()) {
         currentImg = image;

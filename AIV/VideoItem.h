@@ -6,6 +6,7 @@
 #include <QImage>
 
 #include "opencv2/opencv.hpp"
+#include "FrameProvider.h"
 
 class VideoItem : public QQuickItem
 {
@@ -17,13 +18,14 @@ public:
     explicit VideoItem(QQuickItem *parent = nullptr);
 
     QQuickItem* source();
-    void setSource(QQuickItem* source);
 
 signals:
     void sourceChanged();
 
 public slots:
-    void updateFrame(cv::UMat frame);
+    void setSource(QQuickItem* source);
+
+    void updateFrame(frameData frame);
 
 private:
     QSGNode *updatePaintNode(QSGNode *node, UpdatePaintNodeData *data) override;

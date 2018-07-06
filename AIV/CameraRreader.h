@@ -11,7 +11,7 @@ class CameraReader : public FrameProvider
 {
     Q_OBJECT
 
-    Q_PROPERTY(QString source READ source WRITE setSource NOTIFY sourceChanged)
+    Q_PROPERTY(QVariant source READ source WRITE setSource NOTIFY sourceChanged)
     Q_PROPERTY(bool isFile READ isFile WRITE setIsFile NOTIFY isFileChanged)
 public:
     explicit CameraReader(QQuickItem *parent = nullptr);
@@ -19,22 +19,20 @@ public:
 
     enum readerState {STOPED, STARTED, PAUSED};
 
-    QString source();
+    QVariant source() override;
     bool isFile();
 
-    void setSource(QString source);
+    void setSource(QVariant source) override;
     void setIsFile(bool isFile);
 
 signals:
 
-    void sourceChanged(QString source);
+    void sourceChanged();
     void isFileChanged(bool isFile);
 
     void stoped();
     void paused();
     void started();
-
-    //void newFrame(cv::UMat frame);
 
     // private signals
     void startRequest();
@@ -64,7 +62,6 @@ private:
     QThread* p_readerThread;
     StreamReader* p_reader;
 };
-
 
 class StreamReader : public QObject
 {

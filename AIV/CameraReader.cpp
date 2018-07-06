@@ -127,18 +127,23 @@ CameraReader::CameraReader(QQuickItem *parent)
     p_readerThread->start();
 }
 
-QString CameraReader::source()
+QVariant CameraReader::source()
 {
-    return p_reader->source();
+    return QVariant(p_reader->source());
 }
 bool CameraReader::isFile()
 {
     return p_reader->isFile();
 }
 
-void CameraReader::setSource(QString src)
+void CameraReader::setSource(QVariant src)
 {
-    emit setSourceRequest(src);
+    QString str = src.toString();
+    if (str.isEmpty()) {
+        qWarning() << "empty source srting for CameraReader";
+        return;
+    }
+    emit setSourceRequest(str);
 }
 void CameraReader::setIsFile(bool isFile)
 {
@@ -176,11 +181,13 @@ void CameraReader::stopSignal()
 }
 void CameraReader::newFrameSignal(cv::UMat frame)
 {
-    emit newFrame(frame);
+    frameData data;
+    data.frame = frame;
+    emit newFrame(data);
 }
 void CameraReader::sourceChangedSignal(QString source)
 {
-    emit sourceChanged(source);
+    emit sourceChanged();
 }
 void CameraReader::isFileChangedSignal(bool isFile)
 {

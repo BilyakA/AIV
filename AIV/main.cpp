@@ -3,12 +3,14 @@
 
 #include "CameraRreader.h"
 #include "VideoItem.h"
+#include "VideoPreprocessor.h"
 
 int main(int argc, char *argv[])
 {
     qRegisterMetaType<cv::UMat>("cv::UMat");
     qmlRegisterType<CameraReader>("AIVCamera", 1, 0, "CameraReader");
     qmlRegisterType<VideoItem>("AIVCamera", 1, 0, "VideoItem");
+    qmlRegisterType<VideoPreprocessor>("AIVCamera", 1, 0, "VideoPreprocessor");
 
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 

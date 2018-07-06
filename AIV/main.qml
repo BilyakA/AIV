@@ -18,9 +18,31 @@ Window {
         }
     }
 
+    VideoPreprocessor {
+        id: grayScalePreprocessor
+        type: VideoPreprocessor.GRAYSCALE
+        source: imageProvider
+    }
+
+    VideoPreprocessor {
+        id: homographyPreprocessor
+        type: VideoPreprocessor.HOMOGRAPHY
+        source: grayScalePreprocessor
+    }
+
+    //VideoFilter {
+    //    id: stabilizationFilter
+    //    type: stabilization
+    //}
+    //
+    //VideoFilter {
+    //    id: panoramaFilter
+    //    type: panorama
+    //}
+
     VideoItem {
         id: videoOutput
-        source: imageProvider
+        source: homographyPreprocessor
         anchors.fill: parent
     }
 }
