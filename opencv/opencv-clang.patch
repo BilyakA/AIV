@@ -1,0 +1,58 @@
+diff --git a/opencv/cmake/OpenCVCompilerOptions.cmake b/opencv/cmake/OpenCVCompilerOptions.cmake
+index b841e3b37..4c3c6a483 100644
+--- a/opencv/cmake/OpenCVCompilerOptions.cmake
++++ b/opencv/cmake/OpenCVCompilerOptions.cmake
+@@ -71,7 +71,7 @@ if(CV_ICC AND NOT ENABLE_FAST_MATH)
+   endif()
+ endif()
+
+-if(CMAKE_COMPILER_IS_GNUCXX)
++if(CMAKE_COMPILER_IS_GNUCXX AND NOT CMAKE_CXX_COMPILER_ID MATCHES "[cC][lL][aA][nN][gG]")
+   # High level of warnings.
+   add_extra_compiler_option(-W)
+   add_extra_compiler_option(-Wall)
+diff --git a/opencv/modules/core/include/opencv2/core/core_c.h b/opencv/modules/core/include/opencv2/core/core_c.h
+index 754af2fc6..17a2c67af 100644
+--- a/opencv/modules/core/include/opencv2/core/core_c.h
++++ b/opencv/modules/core/include/opencv2/core/core_c.h
+@@ -56,7 +56,8 @@
+    C++ construrtors for simpler interoperability with C++ API of the library
+ */
+ #    pragma warning(disable:4190)
+-#  elif defined __clang__ && __clang_major__ >= 3
++#  endif
++#  if defined __clang__ && __clang_major__ >= 3
+ #    pragma GCC diagnostic ignored "-Wreturn-type-c-linkage"
+ #  endif
+ #endif
+diff --git a/opencv/modules/core/include/opencv2/core/hal/intrin.hpp b/opencv/modules/core/include/opencv2/core/hal/intrin.hpp
+index 9dcfc5623..72365834d 100644
+--- a/opencv/modules/core/include/opencv2/core/hal/intrin.hpp
++++ b/opencv/modules/core/include/opencv2/core/hal/intrin.hpp
+@@ -49,6 +49,9 @@
+ #include <float.h>
+ #include <stdlib.h>
+ #include "opencv2/core/cvdef.h"
++#if defined(__clang__)
++# include <bmiintrin.h>
++#endif
+ 
+ #define OPENCV_HAL_ADD(a, b) ((a) + (b))
+ #define OPENCV_HAL_AND(a, b) ((a) & (b))
+diff --git a/opencv/modules/core/src/convert.fp16.cpp b/opencv/modules/core/src/convert.fp16.cpp
+index 927fb62cb..a0f0f9ee1 100644
+--- a/opencv/modules/core/src/convert.fp16.cpp
++++ b/opencv/modules/core/src/convert.fp16.cpp
+@@ -2,6 +2,11 @@
+ // It is subject to the license terms in the LICENSE file found in the top-level directory
+ // of this distribution and at http://opencv.org/license.html
+
++#if defined(_MSC_VER) && defined(__clang__)
++# if !defined(__AVX2__)
++# define __AVX2__
++# endif
++#endif
+
+ #include "precomp.hpp"
+ #include "convert.hpp"
+ 

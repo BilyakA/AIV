@@ -1,0 +1,158 @@
+defineReplace(mkdir) {
+    equals(QMAKE_HOST.os, Windows) {
+        return(if not exist $$system_path($$1) mkdir $$system_path($$1) & if not exist $$system_path($$1) exit 1)
+    }
+    equals(QMAKE_HOST.os, Linux) {
+        return(mkdir -p $$system_path($$1))
+    }
+}
+
+defineReplace(remove) {
+    equals(QMAKE_HOST.os, Windows) {
+        return(IF EXIST $$system_path($$1) DEL $$system_path($$1) )
+    }
+    equals(QMAKE_HOST.os, Linux) {
+        return(rm -f $$system_path($$1))
+    }
+}
+
+defineReplace(rename) {
+    equals(QMAKE_HOST.os, Windows) {
+        return(REN $$system_path($$1) $$system_path($$2) )
+    }
+    equals(QMAKE_HOST.os, Linux) {
+        return(mv -f $$system_path($$1) $$dirname($$system_path($$1))/$$system_path($$2))
+    }
+}
+
+defineReplace(removeDir) {
+    equals(QMAKE_HOST.os, Windows) {
+        return(RD /s /q $$system_path($$1) )
+    }
+    equals(QMAKE_HOST.os, Linux) {
+        return(rm -rf $$system_path($$1) )
+    }
+}
+
+defineReplace(patch) {
+    SCRIPT =
+    SCRIPT += "if ! patch --dry-run --reverse --force -d $$system_path($$dirname(1)) -p1 < $$system_path($$1) >/dev/null 2>&1; then"
+    SCRIPT += "  patch -Ns -p1 -d $$system_path($$dirname(1)) < $$system_path($$1) || echo "Patch failed" >&2 && exit 1;"
+    SCRIPT += "fi"
+
+    return ($$SCRIPT)
+}
+
+defineReplace(cachedBuildScript) {
+    FILENAME = $$1
+    SCRIPT =
+    equals(QMAKE_HOST.os, Windows) {
+        SCRIPT+="IF NOT EXIST $$system_path($${FILENAME}.cache) GOTO build"
+        SCRIPT+="FC $$system_path($${FILENAME}) $$system_path($${FILENAME}.cache) > nul"
+        SCRIPT+="IF errorlevel 1 ( GOTO build ) ELSE ( GOTO skip )"
+        SCRIPT+=":build"
+        SCRIPT+="cmd /c $$system_path($${FILENAME})"
+        SCRIPT+="IF errorlevel 1 EXIT errorlevel"
+        SCRIPT+="COPY $$system_path($${FILENAME}) $$system_path($${FILENAME}.cache)"
+        SCRIPT+=":skip"
+        SCRIPT+="EXIT 0"
+    }
+    equals(QMAKE_HOST.os, Linux) {
+        SCRIPT+="$${LITERAL_HASH}!/bin/bash"
+        SCRIPT+="set -e"
+        SCRIPT+="if test ! -e $$system_path($${FILENAME}.cache) || ! diff -q $$system_path($${FILENAME}.cache) $$system_path($${FILENAME}); then"
+        SCRIPT+="sh $$system_path($${FILENAME})"
+        SCRIPT+="cp $$system_path($${FILENAME}) $$system_path($${FILENAME}.cache);"
+        SCRIPT+="fi"
+    }
+
+    return ($$SCRIPT)
+}
+
+defineReplace(buildScript) {
+    SCRIPT =
+    #equals(QMAKE_HOST.os, Windows) {
+    #    SCRIPT+="IF NOT EXIST $$system_path($${FILENAME}.cache) GOTO build"
+    #    SCRIPT+="FC $$system_path($${FILENAME}) $$system_path($${FILENAME}.cache) > nul"
+    #    SCRIPT+="IF errorlevel 1 ( GOTO build ) ELSE ( GOTO skip )"
+    #    SCRIPT+=":build"
+    #    SCRIPT+="cmd /c $$system_path($${FILENAME})"
+    #    SCRIPT+="IF errorlevel 1 EXIT errorlevel"
+    #    SCRIPT+="COPY $$system_path($${FILENAME}) $$system_path($${FILENAME}.cache)"
+    #    SCRIPT+=":skip"
+    #    SCRIPT+="EXIT 0"
+    #}
+    equals(QMAKE_HOST.os, Linux) {
+        SCRIPT+="$${LITERAL_HASH}!/bin/bash"
+        SCRIPT+="set -e"
+        SCRIPT+= $$1
+    }
+
+    return ($$SCRIPT)
+}
+
+defineReplace(platformScriptFile) {
+    FILENAME = $$1
+    equals(QMAKE_HOST.os, Windows) {
+        FILENAME = $${FILENAME}.bat
+    }
+    equals(QMAKE_HOST.os, Linux) {
+        FILENAME = $${FILENAME}.sh
+    }
+
+    return($$FILENAME)
+}
+
+defineTest(buildFileCached) {
+    # set actual build script filename
+    BUILD_FILENAME = $$platformScriptFile($$shadowed($$PWD)/.$${TARGET}_build)
+    # load build script
+    BUILD_SCRIPT = $$1
+    # and write it to file
+    write_file($$BUILD_FILENAME, BUILD_SCRIPT)
+
+    # set cache build script filename
+    CACHE_FILENAME = $$platformScriptFile($$shadowed($$PWD)/$${TARGET})
+    # cache script
+    CACHE_SCRIPT = $$cachedBuildScript($$BUILD_FILENAME)
+    # and write it to file
+    write_file($$CACHE_FILENAME, CACHE_SCRIPT)
+
+    QMAKE_EXTRA_TARGETS += $${TARGET}_BUILD
+    POST_TARGETDEPS += $${TARGET}_BUILD
+
+    equals(QMAKE_HOST.os, Windows) {
+        $${TARGET}_BUILD.commands = cmd /c $$CACHE_FILENAME
+    }
+    equals(QMAKE_HOST.os, Linux) {
+        $${TARGET}_BUILD.commands = sh $$CACHE_FILENAME
+    }
+
+    export(QMAKE_EXTRA_TARGETS)
+    export(POST_TARGETDEPS)
+    export($${TARGET}_BUILD.commands)
+}
+
+defineTest(buildFile) {
+    # set actual build script filename
+    BUILD_FILENAME = $$platformScriptFile($$shadowed($$PWD)/$${TARGET}_build)
+    # load build script
+    BUILD_SCRIPT = $$buildScript($$1)
+    # and write it to file
+    write_file($$BUILD_FILENAME, BUILD_SCRIPT)
+
+    QMAKE_EXTRA_TARGETS += $${TARGET}_BUILD
+    POST_TARGETDEPS += $${TARGET}_BUILD
+
+    equals(QMAKE_HOST.os, Windows) {
+        $${TARGET}_BUILD.commands = cmd /c $$BUILD_FILENAME
+    }
+    equals(QMAKE_HOST.os, Linux) {
+        $${TARGET}_BUILD.commands = sh $$BUILD_FILENAME
+    }
+
+    export(QMAKE_EXTRA_TARGETS)
+    export(POST_TARGETDEPS)
+    export($${TARGET}_BUILD.commands)
+}
+

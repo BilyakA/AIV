@@ -1,0 +1,96 @@
+defineTest(third_party_config) {
+    # if target is disabled in CONFIG - skip
+    if(!CONFIG($$TARGET):!CONFIG(LIB$$TARGET)) {
+        return(false)
+    }
+
+    file = $$BUILD_PWD/config.pri
+    module = $$1
+    config = $$2
+
+    file_contest = $$cat($$file, lines)
+
+    # add module to global CONFIG to enable it
+    if(!infile($$file, CONFIG, $${module})) {
+        file_contest += $$quote(CONFIG += $${module})
+    }
+
+    # if there is config for module
+    if(infile($$file, $${module}_CONFIG)){
+        # search for MODULE_CONFIG string
+        CONFIG_STRING = $$find(file_contest, $${module}_CONFIG)
+        # needed for later replace
+        OLD_CONFIG_STRING = $$CONFIG_STRING
+
+        # now some qmake magic with *=
+        # evaluate string so variable is loaded
+        eval($$CONFIG_STRING)
+        # and change it with *= to make sure no settings will be written twice
+        eval($${module}_CONFIG *= $$config)
+        CONFIG_STRING = $$quote($${module}_CONFIG = $$eval($${module}_CONFIG))
+
+        file_contest = $$replace(file_contest, $$OLD_CONFIG_STRING, $$CONFIG_STRING)
+    } else {
+        # if not - just add it
+        file_contest += $$quote($${module}_CONFIG = $$config)
+    }
+
+    # save file contest
+    write_file($$file, file_contest)
+
+    # reconfigure module with new settings
+    if(isEmpty($${module}_MAKEFILE)){
+        error(No Makefile saved for $${module})
+    }
+    if(isEmpty($${module}_PRO)){
+        error(No .pro saved for $${module})
+    }
+
+    #message(Reconfiguring $${module})
+    !system("$$QMAKE_QMAKE -o $$eval($${module}_MAKEFILE) $$eval($${module}_PRO) $$QMAKE_ARGS"){
+        message($$QMAKE_QMAKE -o $$eval($${module}_MAKEFILE) $$eval($${module}_PRO) $$QMAKE_ARGS)
+        error(qmake on $${module} returned NZEC)
+    }
+
+    return(true)
+}
+
+# saves meta information about current project
+defineTest(saveMeta) {
+    file = $$BUILD_PWD/config.pri
+
+    if(isEmpty(1)){
+        module = $${TARGET}
+    } else {
+        module = $$1
+    }
+
+    if(isEmpty(2)){
+        pro_file = $$_PRO_FILE_
+    } else {
+        pro_file = $$absolute_path($$2)
+    }
+
+    if(isEmpty(3)){
+        if(isEmpty(MAKEFILE)){
+            GEN_MAKEFILE = Makefile
+        } else {
+            GEN_MAKEFILE = $$MAKEFILE
+        }
+        makefile_file = $$GEN_MAKEFILE
+    } else {
+        makefile_file = $$absolute_path($$3)
+    }
+
+    if(!infile($$file, $${module}_PRO)){
+        file_contest = $$cat($$file, lines)
+        file_contest += $$quote($${module}_PRO = $$pro_file)
+        write_file($$file, file_contest)
+    }
+    if(!infile($$file, $${module}_MAKEFILE)){
+        file_contest = $$cat($$file, lines)
+        file_contest += $$quote($${module}_MAKEFILE = $$makefile_file)
+        write_file($$file, file_contest)
+    }
+    return(true)
+}

@@ -1,0 +1,5 @@
+!defined(num_add, replace){
+    defineReplace(num_add) {
+        return($$system(echo $(($$1+$$2))))
+    }
+}

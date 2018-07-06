@@ -1,0 +1,94 @@
+diff --git a/opencv/CMakeLists.txt b/opencv/CMakeLists.txt
+index 1ab31582f..cb29ddc66 100644
+--- a/opencv/CMakeLists.txt
++++ b/opencv/CMakeLists.txt
+@@ -428,11 +428,11 @@ else()
+
+   if(WIN32 AND CMAKE_HOST_SYSTEM_NAME MATCHES Windows)
+     if(OpenCV_STATIC)
+-      ocv_update(OPENCV_LIB_INSTALL_PATH   "${OpenCV_INSTALL_BINARIES_PREFIX}staticlib${LIB_SUFFIX}")
++      ocv_update(OPENCV_LIB_INSTALL_PATH   "${OpenCV_INSTALL_BINARIES_PREFIX}lib${LIB_SUFFIX}")
+     else()
+       ocv_update(OPENCV_LIB_INSTALL_PATH   "${OpenCV_INSTALL_BINARIES_PREFIX}lib${LIB_SUFFIX}")
+     endif()
+-    ocv_update(OPENCV_3P_LIB_INSTALL_PATH  "${OpenCV_INSTALL_BINARIES_PREFIX}staticlib${LIB_SUFFIX}")
++    ocv_update(OPENCV_3P_LIB_INSTALL_PATH  "${OpenCV_INSTALL_BINARIES_PREFIX}lib${LIB_SUFFIX}")
+     ocv_update(OPENCV_SAMPLES_SRC_INSTALL_PATH    samples)
+     ocv_update(OPENCV_JAR_INSTALL_PATH java)
+     ocv_update(OPENCV_OTHER_INSTALL_PATH   etc)
+@@ -491,8 +491,8 @@ endif()
+
+ if(WIN32)
+   # Postfix of DLLs:
+-  set(OPENCV_DLLVERSION "${OPENCV_VERSION_MAJOR}${OPENCV_VERSION_MINOR}${OPENCV_VERSION_PATCH}")
+-  set(OPENCV_DEBUG_POSTFIX d)
++  set(OPENCV_DLLVERSION "")
++  set(OPENCV_DEBUG_POSTFIX "")
+ else()
+   # Postfix of so's:
+   set(OPENCV_DLLVERSION "")
+diff --git a/opencv/modules/videoio/src/cap_ffmpeg.cpp b/opencv/modules/videoio/src/cap_ffmpeg.cpp
+index 5439f4304..86ef4841c 100644
+--- a/opencv/modules/videoio/src/cap_ffmpeg.cpp
++++ b/opencv/modules/videoio/src/cap_ffmpeg.cpp
+@@ -101,10 +101,10 @@ private:
+     {
+     #if defined _WIN32
+         const wchar_t* module_name_ = L"opencv_ffmpeg"
+-            CVAUX_STRW(CV_MAJOR_VERSION) CVAUX_STRW(CV_MINOR_VERSION) CVAUX_STRW(CV_SUBMINOR_VERSION)
+-        #if (defined _MSC_VER && defined _M_X64) || (defined __GNUC__ && defined __x86_64__)
+-            L"_64"
+-        #endif
++        //    CVAUX_STRW(CV_MAJOR_VERSION) CVAUX_STRW(CV_MINOR_VERSION) CVAUX_STRW(CV_SUBMINOR_VERSION)
++        #if (defined _MSC_VER && defined _M_X64) || (defined __GNUC__ && defined __x86_64__)
++            L"_64"
++        #endif
+             L".dll";
+     # ifdef WINRT
+         icvFFOpenCV = LoadPackagedLibrary( module_name_, 0 );
+diff --git a/opencv/modules/videoio/CMakeLists.txt b/opencv/modules/videoio/CMakeLists.txt
+index 3562bfe05..6020133db 100644
+--- a/opencv/modules/videoio/CMakeLists.txt
++++ b/opencv/modules/videoio/CMakeLists.txt
+@@ -292,8 +292,8 @@ if(WIN32 AND HAVE_FFMPEG)
+   install(FILES "${ffmpeg_path}" DESTINATION ${OPENCV_BIN_INSTALL_PATH} COMPONENT libs RENAME "${ffmpeg_bare_name_ver}")
+
+   if(INSTALL_CREATE_DISTRIB)
+-    install(FILES "${ffmpeg_dir}/opencv_ffmpeg.dll" DESTINATION "bin/" COMPONENT libs RENAME "opencv_ffmpeg${OPENCV_DLLVERSION}.dll")
+-    install(FILES "${ffmpeg_dir}/opencv_ffmpeg_64.dll" DESTINATION "bin/" COMPONENT libs RENAME "opencv_ffmpeg${OPENCV_DLLVERSION}_64.dll")
++    install(FILES "${ffmpeg_dir}/opencv_ffmpeg.dll" DESTINATION "bin/" COMPONENT libs RENAME "opencv_ffmpeg.dll")
++    install(FILES "${ffmpeg_dir}/opencv_ffmpeg_64.dll" DESTINATION "bin/" COMPONENT libs RENAME "opencv_ffmpeg_64.dll")
+   endif()
+ endif()
+ endmacro()
+diff --git a/opencv/cmake/OpenCVGenPkgconfig.cmake b/opencv/cmake/OpenCVGenPkgconfig.cmake
+index 425c0faa3..70868aaa1 100644
+--- a/opencv/cmake/OpenCVGenPkgconfig.cmake
++++ b/opencv/cmake/OpenCVGenPkgconfig.cmake
+@@ -1,6 +1,6 @@
+-if(MSVC OR IOS)
+-  return()
+-endif()
++#if(MSVC OR IOS)
++#  return()
++#endif()
+
+ # --------------------------------------------------------------------------------------------
+ # according to man pkg-config
+#diff --git a/opencv/modules/videoio/CMakeLists.txt b/opencv/modules/videoio/CMakeLists.txt
+#index 3562bfe05..d4d244799 100644
+#--- a/opencv/modules/videoio/CMakeLists.txt
+#+++ b/opencv/modules/videoio/CMakeLists.txt
+#@@ -265,9 +265,9 @@ ocv_warnings_disable(CMAKE_CXX_FLAGS -Wno-deprecated-declarations)
+#
+# if(WIN32 AND HAVE_FFMPEG)
+#   #copy ffmpeg dll to the output folder
+#-  if(MSVC64 OR MINGW64)
+#-    set(FFMPEG_SUFFIX _64)
+#-  endif()
+#+  #if(MSVC64 OR MINGW64)
+#+  #  set(FFMPEG_SUFFIX _64)
+#+  #endif()
+#
+#   set(ffmpeg_dir "${OpenCV_BINARY_DIR}/3rdparty/ffmpeg")
+#   set(ffmpeg_bare_name "opencv_ffmpeg${FFMPEG_SUFFIX}.dll")
