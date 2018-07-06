@@ -10,12 +10,14 @@ SOURCES += \
     CameraReader.cpp    \
     VideoItem.cpp       \
     FrameProvider.cpp \
-    VideoPreprocessor.cpp
+    VideoPreprocessor.cpp \
+    VideoFilter.cpp
 HEADERS += \
     CameraRreader.h     \
     VideoItem.h         \
     FrameProvider.h \
-    VideoPreprocessor.h
+    VideoPreprocessor.h \
+    VideoFilter.h
 
 SOURCES += \
     preprocessors/homography.cpp    \
@@ -23,6 +25,13 @@ SOURCES += \
 HEADERS += \
     preprocessors/homography.h  \
     preprocessors/grayscale.h
+
+SOURCES += \
+    filters/panoramastitcher.cpp \
+    filters/stabilizationfeatures.cpp
+HEADERS += \
+    filters/panoramastitcher.h \
+    filters/stabilizationfeatures.hpp
 
 RESOURCES += qml.qrc
 

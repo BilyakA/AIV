@@ -80,6 +80,16 @@ void PreprocessorHomography::processFrame(frameData*  metaData)
 
     metaData->homographyTransform = cv::findHomography(prevData.features, metaData->features, cv::RANSAC, 3);
 
+    int dx = (-1) * metaData->homographyTransform.at<double>(0,2);
+    int dy = (-1) * metaData->homographyTransform.at<double>(1,2);
+
+    if ((qAbs(dx) > metaData->frame.cols) || (qAbs(dy) > metaData->frame.rows)) {
+        qDebug() << "invalid homography transform. Skipping...";
+        metaData->homographyTransform.at<double>(0,2) = 0;
+        metaData->homographyTransform.at<double>(1,2) = 0;
+        return;
+    }
+
     //for(size_t i=0; i < metaData->features.size(); i++) {
     //    cv::arrowedLine(prevData.frame, prevData.features[i], metaData->features[i], cv::Scalar(255, 0, 0, 255), 1, 8, 0, 0.2);
     //}
