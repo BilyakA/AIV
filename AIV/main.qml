@@ -13,6 +13,7 @@ Window {
         id: imageProvider
         source: "rtsp://root:snorkel@192.168.243.118/axis-media/media.amp?videocodec=h264&amp;streamprofile=Quality"
         isFile: false
+        crop: "2,2,698x568"
 
         Component.onCompleted: {
             imageProvider.start()

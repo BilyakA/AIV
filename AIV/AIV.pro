@@ -44,5 +44,4 @@ LIBS += -L$$BUILD_PWD/third_party/build/lib
 
 LIBS += -lopencv_core -lopencv_videoio -lopencv_imgproc \
     -lopencv_video -lopencv_tracking -lopencv_videostab -lopencv_features2d \
-    -lopencv_saliency \
-    -lopencv_calib3d
+    -lopencv_saliency -lopencv_calib3d

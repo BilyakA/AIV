@@ -8,6 +8,7 @@ StreamReader::StreamReader(QObject* parent)
     , m_state(CameraReader::STOPED)
     , m_isFile(false)
     , m_sourceString("")
+    , m_crop(0, 0, 0, 0)
 {
 
 }
@@ -19,6 +20,10 @@ QString StreamReader::source()
 bool StreamReader::isFile()
 {
     return m_isFile;
+}
+QRect StreamReader::crop()
+{
+    return m_crop;
 }
 
 StreamReader::~StreamReader()
@@ -86,16 +91,32 @@ void StreamReader::setIsFile(bool isFile)
         emit isFileChanged(m_isFile);
     }
 }
+void StreamReader::setCrop(QRect crop)
+{
+    if (m_crop == crop) {
+        return;
+    }
+    m_crop = crop;
+    emit cropChanged(m_crop);
+}
 void StreamReader::sendNextFrame()
 {
     if (m_isFile) {
         if (m_device.read(m_frontbuffer)) {
-            emit newFrame(m_frontbuffer);
+            if (m_crop.width() > 0 && m_crop.height() > 0) {
+                emit newFrame(m_frontbuffer(cv::Rect(m_crop.x(), m_crop.y(), m_crop.width(), m_crop.height())));
+            } else {
+                emit newFrame(m_frontbuffer);
+            }
         }
     } else {
         m_device.retrieve(m_backbuffer);
         m_backbuffer.copyTo(m_frontbuffer);
-        emit newFrame(m_frontbuffer);
+        if (m_crop.width() > 0 && m_crop.height() > 0) {
+            emit newFrame(m_frontbuffer(cv::Rect(m_crop.x(), m_crop.y(), m_crop.width(), m_crop.height())));
+        } else {
+            emit newFrame(m_frontbuffer);
+        }
     }
 }
 
@@ -115,6 +136,7 @@ CameraReader::CameraReader(QQuickItem *parent)
     connect(this, &CameraReader::stopRequest, p_reader, &StreamReader::stop, Qt::QueuedConnection);
     connect(this, &CameraReader::setSourceRequest, p_reader, &StreamReader::setSource, Qt::QueuedConnection);
     connect(this, &CameraReader::setIsFileRequest, p_reader, &StreamReader::setIsFile, Qt::QueuedConnection);
+    connect(this, &CameraReader::setCropRequest, p_reader, &StreamReader::setCrop, Qt::QueuedConnection);
     connect(this, &CameraReader::sendNextFrameRequest, p_reader, &StreamReader::sendNextFrame, Qt::QueuedConnection);
 
     connect(p_reader, &StreamReader::started, this, &CameraReader::startSignal, Qt::QueuedConnection);
@@ -123,6 +145,7 @@ CameraReader::CameraReader(QQuickItem *parent)
     connect(p_reader, &StreamReader::newFrame, this, &CameraReader::newFrameSignal, Qt::QueuedConnection);
     connect(p_reader, &StreamReader::sourceChanged, this, &CameraReader::sourceChangedSignal, Qt::QueuedConnection);
     connect(p_reader, &StreamReader::isFileChanged, this, &CameraReader::isFileChangedSignal, Qt::QueuedConnection);
+    connect(p_reader, &StreamReader::cropChanged, this, &CameraReader::cropChangedSignal, Qt::QueuedConnection);
 
     p_readerThread->start();
 }
@@ -134,6 +157,10 @@ QVariant CameraReader::source()
 bool CameraReader::isFile()
 {
     return p_reader->isFile();
+}
+QRect CameraReader::crop()
+{
+    return p_reader->crop();
 }
 
 void CameraReader::setSource(QVariant src)
@@ -148,6 +175,10 @@ void CameraReader::setSource(QVariant src)
 void CameraReader::setIsFile(bool isFile)
 {
     emit setIsFileRequest(isFile);
+}
+void CameraReader::setCrop(QRect crop)
+{
+    emit setCropRequest(crop);
 }
 
 void CameraReader::start()
@@ -192,6 +223,10 @@ void CameraReader::sourceChangedSignal(QString source)
 void CameraReader::isFileChangedSignal(bool isFile)
 {
     emit isFileChanged(isFile);
+}
+void CameraReader::cropChangedSignal(QRect crop)
+{
+    emit cropChanged(crop);
 }
 
 CameraReader::~CameraReader()
