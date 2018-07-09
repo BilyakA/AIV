@@ -18,11 +18,11 @@ void PreprocessorHomography::processFrame(frameData*  metaData)
     err.clear();
 
     if (metaData->frame.empty()) {
-        qWarning() << "Empty frame as input to homography filter";
+        qWarning() << "Empty frame as input to homography filter. Skipping...";
         return;
     }
     if (metaData->frameGrayscale.empty()) {
-        qWarning() << "Empty grayscale frame as input to homography filter";
+        qWarning() << "Empty grayscale frame as input to homography filter. Skipping...";
         return;
     }
 
@@ -39,7 +39,7 @@ void PreprocessorHomography::processFrame(frameData*  metaData)
         metaData->overlay.copyTo(prevData.overlay);
         metaData->frameGrayscale.copyTo(prevData.frameGrayscale);
 
-        qDebug() << "no features found, skipping!";
+        qDebug() << "no features found. Skipping...";
         return;
     }
 
@@ -73,11 +73,21 @@ void PreprocessorHomography::processFrame(frameData*  metaData)
         metaData->overlay.copyTo(prevData.overlay);
         metaData->frameGrayscale.copyTo(prevData.frameGrayscale);
 
-        qDebug() << "no strong features found, skipping!";
+        qDebug() << "no strong features found. Skipping...";
         return;
     }
 
-    metaData->homographyTransform = cv::findHomography(prevData.features, metaData->features, cv::RANSAC, 3);
+    metaData->homographyTransform = cv::findHomography(prevData.features, metaData->features, cv::RANSAC, cv::LMEDS);
+
+    if (metaData->homographyTransform.empty()) {
+        qDebug() << "no homography transsorm found. Skipping...";
+
+        metaData->frame.copyTo(prevData.frame);
+        metaData->overlay.copyTo(prevData.overlay);
+        metaData->frameGrayscale.copyTo(prevData.frameGrayscale);
+
+        return;
+    }
 
     int dx = (-1) * metaData->homographyTransform.at<double>(0,2);
     int dy = (-1) * metaData->homographyTransform.at<double>(1,2);
