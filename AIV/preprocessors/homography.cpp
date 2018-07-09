@@ -2,7 +2,6 @@
 
 PreprocessorHomography::PreprocessorHomography()
 {
-
 }
 
 void PreprocessorHomography::processFrame(frameData*  metaData)
@@ -36,9 +35,9 @@ void PreprocessorHomography::processFrame(frameData*  metaData)
     cv::goodFeaturesToTrack(prevData.frameGrayscale, prev_corner, 300, 0.10, 20);
 
     if (!prev_corner.size()) {
-        prevData.frame = metaData->frame;
-        prevData.overlay = metaData->overlay;
-        prevData.frameGrayscale = metaData->frameGrayscale;
+        metaData->frame.copyTo(prevData.frame);
+        metaData->overlay.copyTo(prevData.overlay);
+        metaData->frameGrayscale.copyTo(prevData.frameGrayscale);
 
         qDebug() << "no features found, skipping!";
         return;
@@ -61,7 +60,7 @@ void PreprocessorHomography::processFrame(frameData*  metaData)
     // weed out bad matches
     for(size_t i=0; i < status.size(); i++) {
         if(status[i]) {
-            if (err[i] < median_error) {
+            if (err[i] <= median_error) {
                 prevData.features.push_back(prev_corner[i]);
                 metaData->features.push_back(cur_corner[i]);
                 match_found = true;
@@ -70,9 +69,9 @@ void PreprocessorHomography::processFrame(frameData*  metaData)
     }
 
     if (!match_found) {
-        prevData.frame = metaData->frame;
-        prevData.overlay = metaData->overlay;
-        prevData.frameGrayscale = metaData->frameGrayscale;
+        metaData->frame.copyTo(prevData.frame);
+        metaData->overlay.copyTo(prevData.overlay);
+        metaData->frameGrayscale.copyTo(prevData.frameGrayscale);
 
         qDebug() << "no strong features found, skipping!";
         return;
@@ -87,12 +86,13 @@ void PreprocessorHomography::processFrame(frameData*  metaData)
         qDebug() << "invalid homography transform. Skipping...";
         metaData->homographyTransform.at<double>(0,2) = 0;
         metaData->homographyTransform.at<double>(1,2) = 0;
+
+        metaData->frame.copyTo(prevData.frame);
+        metaData->overlay.copyTo(prevData.overlay);
+        metaData->frameGrayscale.copyTo(prevData.frameGrayscale);
+
         return;
     }
-
-    //for(size_t i=0; i < metaData->features.size(); i++) {
-    //    cv::arrowedLine(prevData.frame, prevData.features[i], metaData->features[i], cv::Scalar(255, 0, 0, 255), 1, 8, 0, 0.2);
-    //}
 
     cv::swap(prevData.frame, metaData->frame);
     cv::swap(prevData.overlay, metaData->overlay);
