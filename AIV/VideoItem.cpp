@@ -63,7 +63,7 @@ QSGNode* VideoItem::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *data)
 
     QSGTexture *texture = window()->createTextureFromImage(currentImg);
 
-    node->setRect(boundingRect());
+    node->setRect(QRectF(QPointF(0.0, 0.0), texture->textureSize()));
     node->setSourceRect(QRectF(QPointF(0.0, 0.0), texture->textureSize()));
 
     node->setTexture(texture);

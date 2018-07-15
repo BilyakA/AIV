@@ -8,6 +8,7 @@ StreamReader::StreamReader(QObject* parent)
     , m_state(CameraReader::STOPED)
     , m_isFile(false)
     , m_sourceString("")
+    , m_deviceNum(-1)
     , m_crop(0, 0, 0, 0)
 {
 
@@ -16,6 +17,10 @@ StreamReader::StreamReader(QObject* parent)
 QString StreamReader::source()
 {
     return m_sourceString;
+}
+int StreamReader::device()
+{
+    return m_deviceNum;
 }
 bool StreamReader::isFile()
 {
@@ -73,12 +78,35 @@ void StreamReader::setSource(QString source)
     }
     setIsFile(false);
     m_sourceString = source;
-    m_device.set(cv::CAP_PROP_BUFFERSIZE, 4);
     if (m_device.open( m_sourceString.toStdString() )) {
         pause();
+        m_device.set(cv::CAP_PROP_BUFFERSIZE, 4);
         return;
     } else {
         qCritical() << "Can not open" << m_sourceString;
+        return;
+    }
+
+    emit sourceChanged(m_sourceString);
+}
+void StreamReader::setDevice(int device)
+{
+    if (m_deviceNum == device) {
+        return;
+    }
+
+    if (m_state != CameraReader::STOPED) {
+        stop();
+    }
+
+    setIsFile(false);
+    m_deviceNum = device;
+    if (m_device.open( m_deviceNum )) {
+        pause();
+        m_device.set(cv::CAP_PROP_BUFFERSIZE, 4);
+        return;
+    } else {
+        qCritical() << "Can not open" << m_deviceNum;
         return;
     }
 
@@ -135,6 +163,7 @@ CameraReader::CameraReader(QQuickItem *parent)
     connect(this, &CameraReader::pauseRequest, p_reader, &StreamReader::pause, Qt::QueuedConnection);
     connect(this, &CameraReader::stopRequest, p_reader, &StreamReader::stop, Qt::QueuedConnection);
     connect(this, &CameraReader::setSourceRequest, p_reader, &StreamReader::setSource, Qt::QueuedConnection);
+    connect(this, &CameraReader::setDeviceRequest, p_reader, &StreamReader::setDevice, Qt::QueuedConnection);
     connect(this, &CameraReader::setIsFileRequest, p_reader, &StreamReader::setIsFile, Qt::QueuedConnection);
     connect(this, &CameraReader::setCropRequest, p_reader, &StreamReader::setCrop, Qt::QueuedConnection);
     connect(this, &CameraReader::sendNextFrameRequest, p_reader, &StreamReader::sendNextFrame, Qt::QueuedConnection);
@@ -144,6 +173,7 @@ CameraReader::CameraReader(QQuickItem *parent)
     connect(p_reader, &StreamReader::stoped, this, &CameraReader::stopSignal, Qt::QueuedConnection);
     connect(p_reader, &StreamReader::newFrame, this, &CameraReader::newFrameSignal, Qt::QueuedConnection);
     connect(p_reader, &StreamReader::sourceChanged, this, &CameraReader::sourceChangedSignal, Qt::QueuedConnection);
+    connect(p_reader, &StreamReader::deviceChanged, this, &CameraReader::deviceChangedSignal, Qt::QueuedConnection);
     connect(p_reader, &StreamReader::isFileChanged, this, &CameraReader::isFileChangedSignal, Qt::QueuedConnection);
     connect(p_reader, &StreamReader::cropChanged, this, &CameraReader::cropChangedSignal, Qt::QueuedConnection);
 
@@ -153,6 +183,10 @@ CameraReader::CameraReader(QQuickItem *parent)
 QVariant CameraReader::source()
 {
     return QVariant(p_reader->source());
+}
+QVariant CameraReader::device()
+{
+    return QVariant(p_reader->device());
 }
 bool CameraReader::isFile()
 {
@@ -171,6 +205,15 @@ void CameraReader::setSource(QVariant src)
         return;
     }
     emit setSourceRequest(str);
+}
+void CameraReader::setDevice(QVariant device)
+{
+    bool ok;
+    int deviceNum = device.toInt(&ok);
+    if (!ok) {
+        qWarning() << "invalid device number for CameraReader";
+    }
+    emit setDeviceRequest(deviceNum);
 }
 void CameraReader::setIsFile(bool isFile)
 {
@@ -219,6 +262,10 @@ void CameraReader::newFrameSignal(cv::UMat frame)
 void CameraReader::sourceChangedSignal(QString source)
 {
     emit sourceChanged();
+}
+void CameraReader::deviceChangedSignal(int deviceNum)
+{
+    emit deviceChanged();
 }
 void CameraReader::isFileChangedSignal(bool isFile)
 {

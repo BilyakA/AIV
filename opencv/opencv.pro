@@ -28,7 +28,7 @@ BUILD_COMMANDS += "cd opencv"
 
 BUILD_COMMANDS.platform_specific =
 windows{
-    BUILD_COMMANDS.platform_specific = "-G \"NMake Makefiles\" "
+    BUILD_COMMANDS.platform_specific = "-G \"NMake Makefiles\" -DWITH_DSHOW=ON"
     BUILD_COMMANDS.platform_specific.CXX_FLAGS = "-EHa"
 }
 linux{
@@ -57,7 +57,7 @@ BUILD_COMMANDS += "cmake \
     -DCMAKE_C_FLAGS=\"-Wno-unknown-argument -Wno-unused-parameter -Wno-unused-command-line-argument -Wno-invalid-noreturn -Wno-comment -Wno-return-type-c-linkage -Wno-unused-parameter\" \
     $$PWD/opencv/ \
     -DENABLE_PRECOMPILED_HEADERS=OFF \
-    -DWITH_TIFF=OFF -DWITH_1394=OFF -DWITH_DSHOW=OFF\
+    -DWITH_TIFF=OFF -DWITH_1394=OFF\
     -DBUILD_opencv_apps=OFF \
     -DBUILD_opencv_aruco=OFF \
     -DBUILD_opencv_bgsegm=OFF \

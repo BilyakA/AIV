@@ -7,13 +7,14 @@ Window {
     visible: true
     width: 640
     height: 480
-    title: qsTr("Hello World")
+    title: qsTr("AIV DEMO")
 
     CameraReader {
         id: imageProvider
-        source: "rtsp://root:snorkel@192.168.243.118/axis-media/media.amp?videocodec=h264&amp;streamprofile=Quality"
+        //source: "rtsp://"
+        device: 1 + CameraReader.CAP_DSHOW
         isFile: false
-        crop: "2,2,698x568"
+        //crop: "2,2,698x568"
 
         Component.onCompleted: {
             imageProvider.start()
