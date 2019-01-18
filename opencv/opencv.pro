@@ -126,6 +126,6 @@ windows{
     BUILD_COMMANDS += "make install"
 }
 
-BUILD_COMMANDS += "xcopy /Y /E $$system_path($$BUILD_PWD/third_party/build/bin/*.dll) $$system_path($$BUILD_PWD/AIV/)"
+windows:BUILD_COMMANDS += "xcopy /Y /E $$system_path($$BUILD_PWD/third_party/build/bin/*.dll) $$system_path($$BUILD_PWD/AIV/)"
 
 buildFileCached($$BUILD_COMMANDS)
