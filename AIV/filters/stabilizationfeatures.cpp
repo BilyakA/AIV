@@ -16,6 +16,7 @@ StabilizationFeatures::StabilizationFeatures()
     P = Trajectory(1,1,1); //set error variance,set 1
 }
 
+// TODO: filter out collinuar points
 void StabilizationFeatures::processFrame(frameData *metaData)
 {
     // in rare cases no transform is found. We'll just use the last known good transform.
