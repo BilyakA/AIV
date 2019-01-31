@@ -12,7 +12,7 @@ Window {
     CameraReader {
         id: imageProvider
         //source: "rtsp://"
-        device: 1 + CameraReader.CAP_DSHOW
+        device: 0 + CameraReader.CAP_DSHOW
         isFile: false
         //crop: "2,2,698x568"
 

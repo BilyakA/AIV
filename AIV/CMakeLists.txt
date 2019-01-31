@@ -42,6 +42,7 @@ target_link_libraries(Engine
 
 target_include_directories(Engine BEFORE
     PUBLIC
+        ${CMAKE_BINARY_DIR}/
         ${CMAKE_SOURCE_DIR}/opencv/opencv/include/
         ${CMAKE_SOURCE_DIR}/opencv/opencv/modules/calib3d/include/
         ${CMAKE_SOURCE_DIR}/opencv/opencv/modules/core/include/

@@ -87,6 +87,13 @@ set(WITH_GTK OFF CACHE BOOL "")
 set(WITH_GTK_2_X OFF CACHE BOOL "")
 set(WITH_VTK OFF CACHE BOOL "")
 
+## WebP does not compile with Clang under Windows
+#set(WITH_WEBP OFF CACHE BOOL "")
+#set(BUILD_WEBP OFF CACHE BOOL "")
+## LibTIFF does not compile with Cland under Windows
+#set(WITH_TIFF OFF CACHE BOOL "")
+#set(BUILD_TIFF OFF CACHE BOOL "")
+
 set(OPENCV_EXTRA_MODULES_PATH "${CMAKE_CURRENT_SOURCE_DIR}/opencv_contrib/modules" CACHE PATH "")
 
 add_subdirectory(opencv)
