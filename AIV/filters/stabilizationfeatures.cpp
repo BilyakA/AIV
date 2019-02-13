@@ -1,4 +1,4 @@
-#include "stabilizationfeatures.hpp"
+#include "stabilizationfeatures.h"
 
 StabilizationFeatures::StabilizationFeatures()
     // Accumulated frame to frame transform

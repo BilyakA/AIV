@@ -18,26 +18,30 @@ add_executable(Engine
     FrameProvider.cpp
     VideoPreprocessor.cpp
     VideoFilter.cpp
+    VideoProcessor.cpp
     preprocessors/homography.cpp
     preprocessors/grayscale.cpp
     filters/panoramastitcher.cpp
     filters/stabilizationfeatures.cpp
+    processors/peopledetect.cpp
     CameraRreader.h
     VideoItem.h
     FrameProvider.h
     VideoPreprocessor.h
     VideoFilter.h
+    VideoProcessor.h
     preprocessors/homography.h
     preprocessors/grayscale.h
     filters/panoramastitcher.h
-    filters/stabilizationfeatures.hpp
+    filters/stabilizationfeatures.h
+    processors/peopledetect.h
     qml.qrc
 )
 
 target_link_libraries(Engine
     PRIVATE
         Qt5::Core Qt5::Gui Qt5::Quick
-        opencv_core opencv_videoio opencv_imgproc opencv_video opencv_tracking opencv_videostab opencv_features2d opencv_saliency opencv_calib3d
+        opencv_core opencv_videoio opencv_imgproc opencv_video opencv_tracking opencv_videostab opencv_features2d opencv_saliency opencv_calib3d opencv_objdetect
 )
 
 target_include_directories(Engine BEFORE

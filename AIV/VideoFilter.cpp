@@ -1,6 +1,6 @@
 #include "VideoFilter.h"
 #include "filters/panoramastitcher.h"
-#include "filters/stabilizationfeatures.hpp"
+#include "filters/stabilizationfeatures.h"
 
 VideoFilter::VideoFilter(QQuickItem *parent)
     : FrameProvider(parent)

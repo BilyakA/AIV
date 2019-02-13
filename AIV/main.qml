@@ -21,28 +21,34 @@ Window {
         }
     }
 
-    VideoPreprocessor {
-        id: grayScalePreprocessor
-        type: VideoPreprocessor.GRAYSCALE
+    //VideoPreprocessor {
+    //    id: grayScalePreprocessor
+    //    type: VideoPreprocessor.GRAYSCALE
+    //    source: imageProvider
+    //}
+    //
+    //VideoPreprocessor {
+    //    id: homographyPreprocessor
+    //    type: VideoPreprocessor.HOMOGRAPHY
+    //    source: grayScalePreprocessor
+    //}
+    //
+    //VideoFilter {
+    //    id: stabilizationFilter
+    //    type: VideoFilter.STABILIZATION
+    //    source: homographyPreprocessor
+    //}
+    //
+    //VideoFilter {
+    //    id: panoramaFilter
+    //    type: VideoFilter.STICHER
+    //    source: homographyPreprocessor
+    //}
+
+    VideoProcessor {
+        id: peopleDetectProcessor
+        type: VideoProcessor.PEOPLEDETECT
         source: imageProvider
-    }
-
-    VideoPreprocessor {
-        id: homographyPreprocessor
-        type: VideoPreprocessor.HOMOGRAPHY
-        source: grayScalePreprocessor
-    }
-
-    VideoFilter {
-        id: stabilizationFilter
-        type: VideoFilter.STABILIZATION
-        source: homographyPreprocessor
-    }
-
-    VideoFilter {
-        id: panoramaFilter
-        type: VideoFilter.STICHER
-        source: homographyPreprocessor
     }
 
     TabView {
@@ -55,35 +61,43 @@ Window {
                 anchors.fill: parent
             }
         }
+        //Tab {
+        //    title: "stabilization"
+        //    Item {
+        //        anchors.fill: parent
+        //        VideoItem {
+        //            id: videoOutputStabilizationOrig
+        //            source: imageProvider
+        //
+        //            anchors.top: parent.top
+        //            anchors.bottom: parent.bottom
+        //            anchors.left: parent.left
+        //            width: parent.width / 2
+        //        }
+        //        VideoItem {
+        //            id: videoOutputStabilization
+        //            source: stabilizationFilter
+        //
+        //            anchors.top: parent.top
+        //            anchors.bottom: parent.bottom
+        //            anchors.right: parent.right
+        //            width: parent.width / 2
+        //        }
+        //    }
+        //}
+        //Tab {
+        //    title: "stiching"
+        //    VideoItem {
+        //        id: videoOutputSticher
+        //        source: panoramaFilter
+        //        anchors.fill: parent
+        //    }
+        //}
         Tab {
-            title: "stabilization"
-            Item {
-                anchors.fill: parent
-                VideoItem {
-                    id: videoOutputStabilizationOrig
-                    source: imageProvider
-
-                    anchors.top: parent.top
-                    anchors.bottom: parent.bottom
-                    anchors.left: parent.left
-                    width: parent.width / 2
-                }
-                VideoItem {
-                    id: videoOutputStabilization
-                    source: stabilizationFilter
-
-                    anchors.top: parent.top
-                    anchors.bottom: parent.bottom
-                    anchors.right: parent.right
-                    width: parent.width / 2
-                }
-            }
-        }
-        Tab {
-            title: "stiching"
+            title: "People Detect"
             VideoItem {
-                id: videoOutputSticher
-                source: panoramaFilter
+                id: videoPeopleDetect
+                source: peopleDetectProcessor
                 anchors.fill: parent
             }
         }

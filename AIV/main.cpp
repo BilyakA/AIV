@@ -5,6 +5,7 @@
 #include "VideoItem.h"
 #include "VideoPreprocessor.h"
 #include "VideoFilter.h"
+#include "VideoProcessor.h"
 
 #include <opencv2/opencv.hpp>
 
@@ -15,6 +16,7 @@ int main(int argc, char *argv[])
     qmlRegisterType<VideoItem>("AIVCamera", 1, 0, "VideoItem");
     qmlRegisterType<VideoPreprocessor>("AIVCamera", 1, 0, "VideoPreprocessor");
     qmlRegisterType<VideoFilter>("AIVCamera", 1, 0, "VideoFilter");
+    qmlRegisterType<VideoProcessor>("AIVCamera", 1, 0, "VideoProcessor");
 
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
