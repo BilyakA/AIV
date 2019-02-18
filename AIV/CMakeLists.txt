@@ -120,3 +120,7 @@ target_include_directories(Engine BEFORE
         ${CMAKE_SOURCE_DIR}/opencv/opencv_contrib/modules/xobjdetect/include/
         ${CMAKE_SOURCE_DIR}/opencv/opencv_contrib/modules/xphoto/include/
 )
+
+add_custom_command(TARGET Engine POST_BUILD
+   COMMAND ${CMAKE_COMMAND} -E copy
+       ${CMAKE_SOURCE_DIR}/opencv/opencv/samples/data/vtest.avi $<TARGET_FILE_DIR:Engine>)

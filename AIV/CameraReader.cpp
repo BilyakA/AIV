@@ -76,7 +76,7 @@ void StreamReader::setSource(QString source)
     if (m_state != CameraReader::STOPED) {
         stop();
     }
-    setIsFile(false);
+    //setIsFile(false);
     m_sourceString = source;
     if (m_device.open( m_sourceString.toStdString() )) {
         pause();

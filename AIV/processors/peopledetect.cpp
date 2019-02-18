@@ -1,9 +1,10 @@
 #include "peopledetect.h"
 
 ProcessorPeopleDetect::ProcessorPeopleDetect()
+    : hog(cv::Size(48, 96), cv::Size(16, 16), cv::Size(8, 8), cv::Size(8, 8), 9)
 {
-    hog.setSVMDetector(cv::HOGDescriptor::getDefaultPeopleDetector());
-    //hog.setSVMDetector(cv::HOGDescriptor::getDaimlerPeopleDetector());
+    //hog.setSVMDetector(cv::HOGDescriptor::getDefaultPeopleDetector());
+    hog.setSVMDetector(cv::HOGDescriptor::getDaimlerPeopleDetector());
 }
 
 void ProcessorPeopleDetect::processFrame(frameData* metaData)
@@ -15,7 +16,8 @@ void ProcessorPeopleDetect::processFrame(frameData* metaData)
         return;
     }
 
-    hog.detectMultiScale(metaData->frame, found, 0, cv::Size(8,8), cv::Size(32,32), 1.05, 2, false);
+    //hog.detectMultiScale(metaData->frame, found, 0, cv::Size(8,8), cv::Size(32,32), 1.05, 2, false);
+    hog.detectMultiScale(metaData->frame, found, 0.5, cv::Size(8,8), cv::Size(32,32), 1.05, 2, true);
 
     for (std::vector<cv::Rect>::iterator i = found.begin(); i != found.end(); ++i)
     {
