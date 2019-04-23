@@ -132,9 +132,9 @@ void StreamReader::sendNextFrame()
     if (m_isFile) {
         if (m_device.read(m_frontbuffer)) {
             if (m_crop.width() > 0 && m_crop.height() > 0) {
-                emit newFrame(m_frontbuffer(cv::Rect(m_crop.x(), m_crop.y(), m_crop.width(), m_crop.height())));
+                emit newFrame(m_frontbuffer(cv::Rect(m_crop.x(), m_crop.y(), m_crop.width(), m_crop.height())).clone());
             } else {
-                emit newFrame(m_frontbuffer);
+                emit newFrame(m_frontbuffer.clone());
             }
         }
     } else {
