@@ -42,6 +42,8 @@ target_link_libraries(Engine
     PRIVATE
         Qt5::Core Qt5::Gui Qt5::Quick
         opencv_core opencv_videoio opencv_imgproc opencv_video opencv_tracking opencv_videostab opencv_features2d opencv_saliency opencv_calib3d opencv_objdetect
+        FFmpeg
+        #live555
 )
 
 target_include_directories(Engine BEFORE

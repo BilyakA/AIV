@@ -4,3 +4,9 @@
 [submodule "opencv/opencv_contrib"]
 	path = opencv/opencv_contrib
 	url = https://github.com/opencv/opencv_contrib.git
+[submodule "FFmpeg/FFmpeg"]
+	path = FFmpeg/FFmpeg
+	url = https://github.com/FFmpeg/FFmpeg.git
+[submodule "x264/x264"]
+	path = x264/x264
+	url = https://code.videolan.org/videolan/x264.git
