@@ -50,6 +50,15 @@ else(USE_PREBUILT_LIBMFX)
         "${INTELMEDIASDK_PATH}/opensource/mfx_dispatch/src/*.cpp"
     )
 
+    # intel's mfx_load_dll adds _d suffix to every dll
+    # so we need to exclude it from sources, make a copy of it,
+    # repalce all *_d.dll with *.dll and add resulting file to sources
+    list(REMOVE_ITEM INTELMEDIASDK_SRC "${INTELMEDIASDK_PATH}/opensource/mfx_dispatch/src/mfx_load_dll.cpp")
+    file(READ "${INTELMEDIASDK_PATH}/opensource/mfx_dispatch/src/mfx_load_dll.cpp" _MFX_LOAD_DLL)
+    string(REPLACE "_d.dll" ".dll" _MFX_LOAD_DLL "${_MFX_LOAD_DLL}")
+    file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/mfx_load_dll.cpp" "${_MFX_LOAD_DLL}")
+    list(APPEND INTELMEDIASDK_SRC "${CMAKE_CURRENT_BINARY_DIR}/mfx_load_dll.cpp")
+
     add_library(libmfx STATIC
         ${INTELMEDIASDK_SRC}
     )

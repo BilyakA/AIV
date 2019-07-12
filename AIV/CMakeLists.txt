@@ -8,7 +8,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(Qt5
     REQUIRED
-    COMPONENTS Core Gui Quick
+    COMPONENTS Core Gui Qml Quick
 )
 
 add_executable(Engine
@@ -19,11 +19,15 @@ add_executable(Engine
     VideoPreprocessor.cpp
     VideoFilter.cpp
     VideoProcessor.cpp
+    VideoStreamer.cpp
+    streaming/VideoEncoder.cpp
+    streaming/LiveStreamer.cpp
     preprocessors/homography.cpp
     preprocessors/grayscale.cpp
     filters/panoramastitcher.cpp
     filters/stabilizationfeatures.cpp
     processors/peopledetect.cpp
+
     CameraRreader.h
     VideoItem.h
     FrameProvider.h
@@ -35,15 +39,16 @@ add_executable(Engine
     filters/panoramastitcher.h
     filters/stabilizationfeatures.h
     processors/peopledetect.h
+
     qml.qrc
 )
 
 target_link_libraries(Engine
     PRIVATE
-        Qt5::Core Qt5::Gui Qt5::Quick
+        Qt5::Core Qt5::Gui Qt5::Quick Qt5::Qml
         opencv_core opencv_videoio opencv_imgproc opencv_video opencv_tracking opencv_videostab opencv_features2d opencv_saliency opencv_calib3d opencv_objdetect
         FFmpeg
-        #live555
+        liveMedia
 )
 
 target_include_directories(Engine BEFORE

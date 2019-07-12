@@ -9,106 +9,28 @@ Window {
     height: 480
     title: qsTr("AIV DEMO")
 
-    //CameraReader {
-    //    id: imageProvider
-    //    //source: "rtsp://"
-    //    device: 0 + CameraReader.CAP_DSHOW
-    //    isFile: false
-    //    //crop: "2,2,698x568"
-    //
-    //    Component.onCompleted: {
-    //        imageProvider.start()
-    //    }
-    //}
-
     CameraReader {
-        id: imageProvider
-        source: "./vtest.avi"
-        isFile: true
+        id: videoSource
+        //source: "rtsp://"
+        //device: 0 + CameraReader.CAP_DSHOW
+        device: 0
+        isFile: false
+        //crop: "2,2,698x568"
+
         Component.onCompleted: {
-            imageProvider.start()
+            videoSource.start()
         }
     }
 
-    //VideoPreprocessor {
-    //    id: grayScalePreprocessor
-    //    type: VideoPreprocessor.GRAYSCALE
-    //    source: imageProvider
-    //}
-    //
-    //VideoPreprocessor {
-    //    id: homographyPreprocessor
-    //    type: VideoPreprocessor.HOMOGRAPHY
-    //    source: grayScalePreprocessor
-    //}
-    //
-    //VideoFilter {
-    //    id: stabilizationFilter
-    //    type: VideoFilter.STABILIZATION
-    //    source: homographyPreprocessor
-    //}
-    //
-    //VideoFilter {
-    //    id: panoramaFilter
-    //    type: VideoFilter.STICHER
-    //    source: homographyPreprocessor
-    //}
-
-    VideoProcessor {
-        id: peopleDetectProcessor
-        type: VideoProcessor.PEOPLEDETECT
-        source: imageProvider
-    }
-
-    TabView {
+    VideoItem {
+        id: videoOutput
+        source: videoSource
         anchors.fill: parent
-        //Tab {
-        //    title: "source"
-        //    VideoItem {
-        //        id: videoOutputSource
-        //        source: imageProvider
-        //        anchors.fill: parent
-        //    }
-        //}
-        //Tab {
-        //    title: "stabilization"
-        //    Item {
-        //        anchors.fill: parent
-        //        VideoItem {
-        //            id: videoOutputStabilizationOrig
-        //            source: imageProvider
-        //
-        //            anchors.top: parent.top
-        //            anchors.bottom: parent.bottom
-        //            anchors.left: parent.left
-        //            width: parent.width / 2
-        //        }
-        //        VideoItem {
-        //            id: videoOutputStabilization
-        //            source: stabilizationFilter
-        //
-        //            anchors.top: parent.top
-        //            anchors.bottom: parent.bottom
-        //            anchors.right: parent.right
-        //            width: parent.width / 2
-        //        }
-        //    }
-        //}
-        //Tab {
-        //    title: "stiching"
-        //    VideoItem {
-        //        id: videoOutputSticher
-        //        source: panoramaFilter
-        //        anchors.fill: parent
-        //    }
-        //}
-        Tab {
-            title: "People Detect"
-            VideoItem {
-                id: videoPeopleDetect
-                source: peopleDetectProcessor
-                anchors.fill: parent
-            }
-        }
     }
+
+    VideoStreamer {
+        id: videoStreamer
+        source: videoSource
+    }
+
 }

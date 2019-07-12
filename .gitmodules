@@ -7,6 +7,6 @@
 [submodule "FFmpeg/FFmpeg"]
 	path = FFmpeg/FFmpeg
 	url = https://github.com/FFmpeg/FFmpeg.git
-[submodule "x264/x264"]
-	path = x264/x264
-	url = https://code.videolan.org/videolan/x264.git
+[submodule "qthttpserver/qthttpserver"]
+	path = qthttpserver/qthttpserver
+	url = https://github.com/qt-labs/qthttpserver.git

@@ -54,6 +54,7 @@ ${CMAKE_CURRENT_SOURCE_DIR}/ffmpeg/configure \
 --enable-ffmpeg --enable-ffplay --enable-ffprobe \
 --enable-filter=scale \
 --enable-muxer=mpegts --enable-demuxer=mpegts \
+--enable-muxer=mov --enable-demuxer=mov --enable-muxer=null \
 --enable-parser=h264 \
 --enable-protocol=file \
 --enable-shared --disable-static \
@@ -62,7 +63,7 @@ ${CMAKE_CURRENT_SOURCE_DIR}/ffmpeg/configure \
 ")
 ## INTEL:
 string (APPEND FFMPEG_CONFIGURE "\
---enable-libmfx --enable-filter=scale_qsv --enable-encoder=h264_qsv \
+--enable-libmfx --enable-filter=scale_qsv --enable-encoder=h264_qsv --enable-decoder=h264_qsv \
 ")
 ### NVIDIA:
 #string (APPEND FFMPEG_CONFIGURE "\
